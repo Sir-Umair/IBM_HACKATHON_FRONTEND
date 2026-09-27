@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import Dashboard from './pages/Dashboard';
 import Investigation from './pages/Investigation';
 import InvestigationResult from './pages/InvestigationResult';
@@ -39,6 +40,7 @@ function App() {
           </Routes>
         </main>
       </div>
+      <SpeedInsights />
     </BrowserRouter>
   );
 }
