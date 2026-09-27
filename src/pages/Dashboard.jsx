@@ -4,7 +4,7 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine
 } from 'recharts';
-import { getDashboard } from '../services/api';
+import { getDashboard, API_BASE_URL } from '../services/api';
 import './Dashboard.css';
 
 const COLORS = ['#4f8ef7', '#7c5cd8', '#4caf7d', '#f7a94f', '#f74f6a', '#4fc3f7'];
@@ -91,10 +91,13 @@ export default function Dashboard() {
           <h3 className="error-title">Backend Connection Required</h3>
           <p className="error-desc">{error}</p>
           <div className="error-instructions">
+            <p style={{ marginTop: 0, marginBottom: '10px', fontSize: '0.85rem' }}>
+              <strong>Target URL:</strong> <code>{API_BASE_URL || '(relative to current domain)'}</code>
+            </p>
             <strong>Vercel Deployment Checklist:</strong>
             <ul>
               <li>Open your Frontend Project on Vercel → <strong>Settings</strong> → <strong>Environment Variables</strong>.</li>
-              <li>Ensure <code>VITE_API_URL</code> points to your deployed backend (e.g. <code>https://your-backend.vercel.app</code> without a trailing slash).</li>
+              <li>Ensure <code>VITE_API_URL</code> points to your deployed backend (e.g. <code>https://ibm-hackathon-backend.vercel.app</code> without a trailing slash).</li>
               <li>Trigger a redeploy of the frontend so the new environment variable takes effect.</li>
             </ul>
           </div>

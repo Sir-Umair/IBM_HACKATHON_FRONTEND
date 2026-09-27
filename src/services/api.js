@@ -7,6 +7,8 @@ const rawBaseURL =
   (import.meta.env.PROD ? 'https://ibm-hackathon-backend.vercel.app' : '');
 const cleanBaseURL = rawBaseURL.trim().replace(/\/+$/, '');
 
+export const API_BASE_URL = cleanBaseURL || (typeof window !== 'undefined' ? window.location.origin : '');
+
 const api = axios.create({
   baseURL: cleanBaseURL,
   timeout: 120000,
