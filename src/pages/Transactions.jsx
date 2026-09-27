@@ -189,10 +189,9 @@ export default function Transactions() {
   };
 
   const handlePurgeAll = async () => {
-    const confirmation = window.prompt(
-      "⚠️ PERMANENT WIPE WARNING:\nThis will permanently delete ALL transactions, investigations, and dummy data from the database.\n\nType 'PURGE' to confirm:"
-    );
-    if (confirmation !== 'PURGE') return;
+    if (!window.confirm("Wipe all dummy records and clear the database? This leaves your ledger clean to record real transactions.")) {
+      return;
+    }
 
     try {
       setLoading(true);
