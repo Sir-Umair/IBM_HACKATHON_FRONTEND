@@ -40,6 +40,8 @@ api.interceptors.response.use(
 
 export const getHealth = () => api.get('/api/health');
 
+export const seedDemoData = () => api.post('/api/seed');
+
 export const getDashboard = (period) =>
   period ? api.get(`/api/dashboard?period=${period}`) : api.get('/api/dashboard');
 

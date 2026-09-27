@@ -4,7 +4,7 @@ import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine
 } from 'recharts';
-import { getDashboard, API_BASE_URL } from '../services/api';
+import { getDashboard, seedDemoData, API_BASE_URL } from '../services/api';
 import './Dashboard.css';
 
 const COLORS = ['#4f8ef7', '#7c5cd8', '#4caf7d', '#f7a94f', '#f74f6a', '#4fc3f7'];
@@ -133,7 +133,7 @@ export default function Dashboard() {
           <p className="page-subtitle">Real-time ledger reconciliation & anomaly detection overview</p>
         </div>
 
-        {hasData && (
+        {hasData ? (
           <div className="period-selector">
             {data.available_periods.map(p => (
               <button
@@ -145,6 +145,37 @@ export default function Dashboard() {
               </button>
             ))}
           </div>
+        ) : (
+          <button
+            className="period-btn active"
+            style={{
+              background: 'linear-gradient(135deg, #4f8ef7, #7c5cd8)',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              color: '#ffffff',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+            onClick={async () => {
+              setLoading(true);
+              try {
+                await seedDemoData();
+                const res = await getDashboard();
+                setData(res.data);
+                if (res.data.current_period) setPeriod(res.data.current_period);
+              } catch (err) {
+                console.error("Seeding failed:", err);
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            ⚡ Load Demo Dataset (900+ Records)
+          </button>
         )}
       </div>
 
