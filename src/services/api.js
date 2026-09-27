@@ -76,10 +76,14 @@ export const batchDeleteTransactions = (ids) =>
 export const purgeAllTransactions = () =>
   api.post('/api/transactions/purge');
 
+export const generateScenario = (payload) =>
+  api.post('/api/transactions/generate-scenario', payload);
+
 export const uploadTransactionsCsv = (formData) =>
   api.post('/api/transactions/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
+
 
 export const runInvestigation = (payload) =>
   api.post('/api/investigate', payload);

@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { runInvestigation, getInvestigations, deleteInvestigation } from '../services/api';
+import { runInvestigation, getInvestigations, deleteInvestigation, getDashboard } from '../services/api';
 import './Investigation.css';
 
 const QUICK_PROMPTS = [
-  { label: 'Why did profit decrease?', q: 'Why did profit decrease in February?' },
-  { label: 'Why did expenses increase?', q: 'Why did expenses increase in February?' },
-  { label: 'Revenue increased but profit fell?', q: 'Revenue increased but profit fell in February — why?' },
-  { label: 'Which products lost margin?', q: 'Which products lost margin in February?' },
-  { label: 'Which supplier increased costs?', q: 'Which supplier increased costs in February?' },
-  { label: 'Are there unusual transactions?', q: 'Are there unusual transactions in February?' },
-  { label: 'What changed this month?', q: 'What changed financially in February compared to January?' },
+  { label: 'Why did profit decrease?', q: 'Why did profit decrease in the latest period?' },
+  { label: 'Why did expenses increase?', q: 'Why did expenses increase compared to prior period?' },
+  { label: 'Revenue increased but profit fell?', q: 'Revenue increased but net profit fell — investigate root cause.' },
+  { label: 'Which products lost margin?', q: 'Which products lost margin and caused gross deficit?' },
+  { label: 'Which supplier increased costs?', q: 'Which supplier increased procurement costs?' },
+  { label: 'Are there unusual transactions?', q: 'Are there unusual transactions or anomalous refunds?' },
+  { label: 'What changed this month?', q: 'What changed financially between the two periods?' },
 ];
 
 export default function Investigation() {
@@ -18,6 +18,7 @@ export default function Investigation() {
   const [question, setQuestion] = useState('');
   const [currentPeriod, setCurrentPeriod] = useState('2026-02');
   const [comparisonPeriod, setComparisonPeriod] = useState('2026-01');
+  const [availablePeriods, setAvailablePeriods] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [workflowSteps, setWorkflowSteps] = useState([]);
@@ -31,7 +32,20 @@ export default function Investigation() {
 
   useEffect(() => {
     loadRecent();
+    getDashboard()
+      .then(res => {
+        const periods = res.data?.available_periods || [];
+        if (periods.length > 0) {
+          setAvailablePeriods(periods);
+          const latest = periods[periods.length - 1];
+          const prior = periods.length >= 2 ? periods[periods.length - 2] : periods[0];
+          setCurrentPeriod(latest);
+          setComparisonPeriod(prior);
+        }
+      })
+      .catch(() => {});
   }, []);
+
 
   const handleDeleteRecent = async (invId, e) => {
     e.stopPropagation();
@@ -109,28 +123,38 @@ export default function Investigation() {
 
         <div className="form-row">
           <div className="form-group">
-            <label>Current Period</label>
+            <label>Current Period (Target)</label>
             <input
               type="text"
               className="period-input"
+              list="avail-periods-current"
               value={currentPeriod}
               onChange={e => setCurrentPeriod(e.target.value)}
               placeholder="YYYY-MM"
               pattern="\d{4}-\d{2}"
               disabled={loading}
+              required
             />
+            <datalist id="avail-periods-current">
+              {availablePeriods.map(p => <option key={p} value={p} />)}
+            </datalist>
           </div>
           <div className="form-group">
-            <label>Comparison Period</label>
+            <label>Comparison Period (Baseline)</label>
             <input
               type="text"
               className="period-input"
+              list="avail-periods-compare"
               value={comparisonPeriod}
               onChange={e => setComparisonPeriod(e.target.value)}
               placeholder="YYYY-MM"
               pattern="\d{4}-\d{2}"
               disabled={loading}
+              required
             />
+            <datalist id="avail-periods-compare">
+              {availablePeriods.map(p => <option key={p} value={p} />)}
+            </datalist>
           </div>
           <button
             type="submit"
@@ -140,6 +164,30 @@ export default function Investigation() {
             {loading ? 'Investigating...' : 'Investigate'}
           </button>
         </div>
+        {availablePeriods.length > 0 && (
+          <div style={{ fontSize: '12px', color: '#8892b0', marginTop: '6px' }}>
+            Ledger Active Periods: {availablePeriods.map(p => (
+              <span
+                key={p}
+                style={{
+                  display: 'inline-block',
+                  marginRight: '6px',
+                  padding: '2px 8px',
+                  background: '#1b2038',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  border: '1px solid #2e3354',
+                  color: '#4f8ef7'
+                }}
+                onClick={() => setCurrentPeriod(p)}
+                title="Click to set as Current Period"
+              >
+                {p}
+              </span>
+            ))}
+          </div>
+        )}
+
       </form>
 
       {/* Loading workflow */}
