@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 // Normalize base URL: strip trailing slashes to prevent double-slash errors
-const rawBaseURL = import.meta.env.VITE_API_URL || '';
+const rawBaseURL =
+  import.meta.env.VITE_API_URL ||
+  import.meta.env.VITE_BACKEND_URL ||
+  (import.meta.env.PROD ? 'https://ibm-hackathon-backend.vercel.app' : '');
 const cleanBaseURL = rawBaseURL.trim().replace(/\/+$/, '');
 
 const api = axios.create({
