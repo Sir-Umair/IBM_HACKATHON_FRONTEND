@@ -83,7 +83,28 @@ export default function Dashboard() {
   }, [data, simRevChange, simCostChange]);
 
   if (loading) return <div className="loading">Connecting to ledger database...</div>;
-  if (error) return <div className="error">Error loading dashboard: {error}</div>;
+  if (error) {
+    return (
+      <div className="dashboard-error-banner">
+        <div className="error-card">
+          <span className="error-icon">⚠️</span>
+          <h3 className="error-title">Backend Connection Required</h3>
+          <p className="error-desc">{error}</p>
+          <div className="error-instructions">
+            <strong>Vercel Deployment Checklist:</strong>
+            <ul>
+              <li>Open your Frontend Project on Vercel → <strong>Settings</strong> → <strong>Environment Variables</strong>.</li>
+              <li>Ensure <code>VITE_API_URL</code> points to your deployed backend (e.g. <code>https://your-backend.vercel.app</code> without a trailing slash).</li>
+              <li>Trigger a redeploy of the frontend so the new environment variable takes effect.</li>
+            </ul>
+          </div>
+          <button className="error-retry-btn" onClick={() => window.location.reload()}>
+            ↻ Retry Connection
+          </button>
+        </div>
+      </div>
+    );
+  }
   if (!data) return null;
 
   const m = data.metrics || {};
